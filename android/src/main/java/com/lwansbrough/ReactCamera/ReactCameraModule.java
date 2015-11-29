@@ -70,7 +70,7 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
 
             Matrix matrix = new Matrix();
 
-            mmtrix.postRotate((float)orientation);
+            matrix.postRotate((float)orientation);
             return Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), matrix, true);
         }
 
