@@ -15,7 +15,10 @@ import android.provider.MediaStore.Images.Media;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -47,6 +50,7 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void capture(ReadableMap options, final Callback callback) {
         Camera camera = cameraInstanceManager.getCamera(options.getString("type"));
+        this.cameraInstanceManager.updateCameraOrientation(camera);
         camera.takePicture(null, null, new PictureTakenCallback(options, callback, reactContext));
     }
 
@@ -61,10 +65,12 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
             this.reactContext = reactContext;
         }
 
-        private Bitmap RotateBitmap(Bitmap original, int deg)
+        private Bitmap RotateBitmap(Bitmap original, int orientation)
         {
+
             Matrix matrix = new Matrix();
-            matrix.postRotate((float)deg);
+
+            mmtrix.postRotate((float)orientation);
             return Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), matrix, true);
         }
 
@@ -76,7 +82,7 @@ public class ReactCameraModule extends ReactContextBaseJavaModule {
 
             BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
             bitmapOptions.inSampleSize = options.getInt("sampleSize");
-            Bitmap bitmap = RotateBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions), -90);
+            Bitmap bitmap = RotateBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, bitmapOptions), 180);
 
             switch(options.getString("target")) {
                 case "base64":
